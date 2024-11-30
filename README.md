@@ -797,7 +797,7 @@ function showReserveOverlay(selectedCity = null) {
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(26, 26, 31, 0.98);
+            background:  #1a1a1f;
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
