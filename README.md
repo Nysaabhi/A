@@ -465,13 +465,14 @@
             }
         });
 
-        // Reserve Data Structure
+// Reserve Data Structure with City Information
 const reserveData = [
     {
         category: 'Venue',
         items: [
             {
                 name: 'Royal Wedding Hall',
+                city: 'Udaipur',
                 image: 'http://www.udaipurweddings.com/wp-content/uploads/2017/11/13-3.jpg',
                 description: 'Elegant venue for grand celebrations',
                 price: '₹50,000 - ₹1,00,000',
@@ -480,10 +481,11 @@ const reserveData = [
                     facilities: ['AC', 'Stage', 'Parking', 'Catering Area'],
                     amenities: ['Sound System', 'Decoration Services', 'Bridal Room']
                 },
-                whatsappNumber: '+91XXXXXXXXXX'
+                whatsappNumber: '+917869809022'
             },
             {
                 name: 'Riverside Resort',
+                city: 'Jaipur',
                 image: 'https://di5fgdew4nptq.cloudfront.net/api2/media/images/140a5288-3ccf-eb11-80dd-f8bc124783a3',
                 description: 'Scenic location for intimate gatherings',
                 price: '₹30,000 - ₹75,000',
@@ -492,7 +494,7 @@ const reserveData = [
                     facilities: ['Open Area', 'River View', 'Garden'],
                     amenities: ['Accommodation', 'Bonfire Area', 'Photography Spots']
                 },
-                whatsappNumber: '+91XXXXXXXXXX'
+                whatsappNumber: '+917869809022'
             }
         ]
     },
@@ -501,6 +503,7 @@ const reserveData = [
         items: [
             {
                 name: 'Traditional Dance Troupe',
+                city: 'Udaipur',
                 image: 'https://example.com/dance-troupe.jpg',
                 description: 'Authentic cultural performance',
                 price: '₹25,000 - ₹50,000',
@@ -509,10 +512,11 @@ const reserveData = [
                     performers: '5-10 artists',
                     styles: ['Bharatanatyam', 'Kathak', 'Folk Dances']
                 },
-                whatsappNumber: '+91XXXXXXXXXX'
+                whatsappNumber: '+917869809022'
             },
             {
                 name: 'Live Musical Ensemble',
+                city: 'Jaipur',
                 image: 'https://example.com/music-ensemble.jpg',
                 description: 'Professional live music band',
                 price: '₹35,000 - ₹75,000',
@@ -521,7 +525,7 @@ const reserveData = [
                     musicians: '4-6 members',
                     genres: ['Classical', 'Bollywood', 'Fusion']
                 },
-                whatsappNumber: '+91XXXXXXXXXX'
+                whatsappNumber: '+917869809022'
             }
         ]
     },
@@ -530,6 +534,7 @@ const reserveData = [
         items: [
             {
                 name: 'Traditional Wedding Rituals',
+                city: 'Udaipur',
                 image: 'https://example.com/wedding-rituals.jpg',
                 description: 'Complete wedding ceremony arrangement',
                 price: '₹1,00,000 - ₹3,00,000',
@@ -538,13 +543,132 @@ const reserveData = [
                     duration: 'Full Day',
                     includes: ['Vedic Ceremonies', 'Customized Rituals']
                 },
-                whatsappNumber: '+91XXXXXXXXXX'
+                whatsappNumber: '+917869809022'
             }
         ]
     }
 ];
 
-function showReserveOverlay() {
+function showLocationOverlay(onCitySelect) {
+    // Create location overlay
+    const locationOverlay = document.createElement('div');
+    locationOverlay.id = 'locationOverlay';
+    locationOverlay.className = 'location-overlay';
+
+    // Get unique cities
+    const cities = [...new Set(reserveData.flatMap(category => 
+        category.items.map(item => item.city)
+    ))];
+
+    locationOverlay.innerHTML = `
+        <div class="location-content">
+            <div class="location-header">
+                <h2>Select Your City</h2>
+                <button class="close-location" onclick="hideLocationOverlay()">
+                    <i class="fas fa-long-arrow-alt-left"></i>
+                </button>
+            </div>
+            
+            <div class="cities-grid">
+                ${cities.map(city => `
+                    <div class="city-card" onclick="selectCity('${city}')">
+                        <h3>${city}</h3>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(locationOverlay);
+
+    // Add styles for location overlay
+    const style = document.createElement('style');
+    style.textContent = `
+        .location-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 26, 31, 0.98);
+            z-index: 1100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .location-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .location-content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .location-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .close-location {
+            background: none;
+            border: none;
+            color: #FFD700;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .cities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .city-card {
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .city-card:hover {
+            background: var(--primary-color);
+            color: black;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Window method to select city
+    window.selectCity = (city) => {
+        hideLocationOverlay();
+        onCitySelect(city);
+    };
+
+    // Activate overlay
+    setTimeout(() => {
+        locationOverlay.classList.add('active');
+    }, 10);
+}
+
+function hideLocationOverlay() {
+    const overlay = document.getElementById('locationOverlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+        setTimeout(() => overlay.remove(), 300);
+    }
+}
+
+function showReserveOverlay(selectedCity = null) {
     // Create overlay container
     let overlay = document.createElement('div');
     overlay.id = 'reserveOverlay';
@@ -558,16 +682,28 @@ function showReserveOverlay() {
     ).join('');
 
     // Generate reserve items HTML
-    const generateReserveItems = (category = 'All') => {
-        let items = category === 'All' 
-            ? reserveData.flatMap(cat => cat.items) 
-            : reserveData.find(cat => cat.category === category)?.items || [];
+    const generateReserveItems = (category = 'All', city = null) => {
+        let items = reserveData.flatMap(cat => cat.items);
+        
+        // Filter by city if specified
+        if (city) {
+            items = items.filter(item => item.city === city);
+        }
+
+        // Filter by category if not 'All'
+        if (category !== 'All') {
+            items = items.filter(item => 
+                reserveData.find(cat => cat.category === category)?.items.includes(item)
+            );
+        }
 
         return items.map(item => `
-            <div class="reserve-card" data-category="${item.category}">
+            <div class="reserve-card" data-category="${item.category}" data-city="${item.city}">
                 <div class="reserve-image-container">
                     <img src="${item.image}" alt="${item.name}" class="reserve-image">
-                    <div class="reserve-image-overlay"></div>
+                    <div class="reserve-image-overlay">
+                        <span class="city-tag">${item.city}</span>
+                    </div>
                 </div>
                 <div class="reserve-info">
                     <h3 class="reserve-name">${item.name}</h3>
@@ -592,9 +728,15 @@ function showReserveOverlay() {
         <div class="reserve-content">
             <div class="reserve-header">
                 <h2>Deep Reserve</h2>
-                <button class="close-reserve" onclick="hideReserveOverlay()">
-                    <i class="fas fa-long-arrow-alt-left"></i>
-                </button>
+                <div class="header-actions">
+                    <button class="location-btn" onclick="showLocationOverlay(filterByCity)">
+                        <i class="fas fa-map-marker-alt"></i> 
+                        ${selectedCity || 'Select City'}
+                    </button>
+                    <button class="close-reserve" onclick="hideReserveOverlay()">
+                        <i class="fas fa-long-arrow-alt-left"></i>
+                    </button>
+                </div>
             </div>
             
             <div class="filter-container">
@@ -604,10 +746,24 @@ function showReserveOverlay() {
             </div>
 
             <div class="reserve-grid" id="reserveItemsContainer">
-                ${generateReserveItems()}
+                ${generateReserveItems('All', selectedCity)}
             </div>
         </div>
     `;
+
+    // Define a method to filter by city
+    window.filterByCity = (city) => {
+        const titleElement = overlay.querySelector('.location-btn');
+        titleElement.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${city}`;
+        
+        // Regenerate items with city filter
+        document.getElementById('reserveItemsContainer').innerHTML = generateReserveItems('All', city);
+
+        // Update filter buttons state
+        const filterBtns = overlay.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => btn.classList.remove('active'));
+        filterBtns[0].classList.add('active'); // 'All' category
+    };
 
     // Add event listeners for filter buttons
     setTimeout(() => {
@@ -621,10 +777,15 @@ function showReserveOverlay() {
 
                 // Filter items
                 const category = this.dataset.category;
-                document.getElementById('reserveItemsContainer').innerHTML = generateReserveItems(category);
+                const currentCity = overlay.querySelector('.location-btn').textContent.trim().replace('Select City', '');
+                document.getElementById('reserveItemsContainer').innerHTML = generateReserveItems(
+                    category, 
+                    currentCity === '' ? null : currentCity
+                );
             });
         });
     }, 10);
+
 
     // Add styles
     const style = document.createElement('style');
@@ -665,12 +826,12 @@ function showReserveOverlay() {
         }
 
         .close-reserve {
-    background: none;
-    border: none;
-    color: #FFD700;
-    cursor: pointer;
-    font-size: 24px; /* Adjust size as needed */
-}
+            background: none;
+            border: none;
+            color: #FFD700;
+            cursor: pointer;
+            font-size: 24px;
+        }
 
         .filter-container {
             margin-bottom: 20px;
@@ -749,6 +910,31 @@ function showReserveOverlay() {
             transition: all 0.3s ease;
         }
 
+        /* New styles for city selection */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .location-btn {
+    background: rgba(255, 215, 0, 0.1);
+    color: var(--text-light);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.location-btn:hover {
+    background: var(--primary-color);
+    color: black;
+}
+
         @media (max-width: 768px) {
             .reserve-grid {
                 grid-template-columns: 1fr;
@@ -800,7 +986,7 @@ function showBookingForm(itemName) {
             `Additional Details: ${formData.get('Additional Requirements')}`;
         
         // Redirect to WhatsApp with pre-filled message
-        window.open(`https://wa.me/+91XXXXXXXXXX?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+        window.open(`https://wa.me/7869809022?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
     });
 
     // Add form styles
